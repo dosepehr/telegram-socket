@@ -22,7 +22,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const hpp = require('hpp');
 const compression = require('compression');
-
+const namespaceRouter = require('./modules/Namespaces/namespaceRouter');
 
 const limiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 15 minutes
@@ -76,6 +76,7 @@ app.route('/').all((_, res) => {
     });
 });
 
+app.use('/api/v1/namespaces', namespaceRouter);
 //* 404 route
 app.all('*', async (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
