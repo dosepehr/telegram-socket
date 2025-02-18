@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { messageSchema } = require('../Messages/messageModel');
 const roomSchema = new mongoose.Schema(
     {
         title: {

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const Room = require('../Rooms/roomModel');
 
 const namespaceSchema = new mongoose.Schema(
@@ -13,7 +12,7 @@ const namespaceSchema = new mongoose.Schema(
             required: true,
         },
         rooms: {
-            type: [Room],
+            type: [Room.roomSchema],
             default: [],
         },
     },
