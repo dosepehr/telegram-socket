@@ -5,9 +5,12 @@ window.addEventListener('load', () => {
 
     socket.on('connect', () => {
         socket.on('namespaces', (namespaces) => {
-            console.log(namespaces)
+            console.log(namespaces);
             showNamespaces(namespaces);
             showActiveNamespace(namespaces);
+        });
+        socket.on('newUser', (data) => {
+            console.log(data);
         });
     });
 });

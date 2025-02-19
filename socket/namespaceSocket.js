@@ -17,3 +17,9 @@ exports.initNamespaces = async (io) => {
         });
     });
 };
+
+exports.broadCast = (io) => {
+    io.on('connection', (socket) => {
+        socket.broadcast.emit('newUser', 'socket');
+    });
+};
