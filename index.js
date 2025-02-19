@@ -1,11 +1,12 @@
 const process = require('process');
+const http = require('http');
 const path = require('path');
 process.on('uncaughtException', (err) => {
     console.log('uncaughtException 💥 shutting down');
     console.log(err);
     process.exit(1);
 });
-
+const socketIo = require('./utils/funcs/socket');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
@@ -24,6 +25,7 @@ const hpp = require('hpp');
 const compression = require('compression');
 const namespaceRouter = require('./modules/Namespaces/namespaceRouter');
 const roomRouter = require('./modules/Rooms/roomRouter');
+const { initConnection } = require('./socket/namespaceSocket');
 
 const limiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 15 minutes
@@ -89,7 +91,11 @@ app.use(globalErrorHandler);
 
 //* server setup
 const port = process.env.PORT || 3000;
-const server = app.listen(+port, () => {
+const server = http.createServer(app); 
+const io = socketIo(server); 
+initConnection(io); 
+
+server.listen(+port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
