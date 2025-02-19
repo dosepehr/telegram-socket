@@ -1,18 +1,18 @@
 const process = require('process');
-const http = require('http');
 const path = require('path');
 process.on('uncaughtException', (err) => {
     console.log('uncaughtException 💥 shutting down');
     console.log(err);
     process.exit(1);
 });
-const socketIo = require('./utils/funcs/socket');
+
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 //* routes & error handling
 const { globalErrorHandler } = require('./modules/Error/errorController');
 const AppError = require('./utils/Classes/AppError');
+const { app, io, server } = require('./server');
 
 //* security
 const { rateLimit } = require('express-rate-limit');
@@ -26,9 +26,6 @@ const compression = require('compression');
 const namespaceRouter = require('./modules/Namespaces/namespaceRouter');
 const roomRouter = require('./modules/Rooms/roomRouter');
 
-const { init } = require('./socket/io');
-const initSockets = require('./socket');
-
 const limiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 15 minutes
     message: 'Too many requests from this IP, please try again in an hour',
@@ -41,7 +38,6 @@ const limiter = rateLimit({
 require('dotenv').config();
 require('./utils/funcs/db');
 //* express app
-const app = express();
 app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));
 app.use(bodyParser.json());
@@ -91,17 +87,19 @@ app.all('*', async (req, res, next) => {
 //* error handling middleware
 app.use(globalErrorHandler);
 
-//* server setup
-const server = http.createServer(app);
-const io = init(server); // Initialize Socket.IO
-
-initSockets(); // Load all socket handlers
-
+//* server setup`
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
+io.on("connection", (socket) => {
+    console.log("New client connected:", socket.id);
+
+    socket.on("disconnect", () => {
+        console.log("Client disconnected:", socket.id);
+    });
+});
 process.on('unhandledRejection', (err) => {
     console.log('unhandledRejection 💥 shutting down');
     console.log(err.name, err.message);
