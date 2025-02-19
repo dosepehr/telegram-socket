@@ -25,7 +25,9 @@ const hpp = require('hpp');
 const compression = require('compression');
 const namespaceRouter = require('./modules/Namespaces/namespaceRouter');
 const roomRouter = require('./modules/Rooms/roomRouter');
-const { initConnection } = require('./socket/namespaceSocket');
+
+const { init } = require('./socket/io');
+const initSockets = require('./socket');
 
 const limiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 15 minutes
@@ -90,12 +92,13 @@ app.all('*', async (req, res, next) => {
 app.use(globalErrorHandler);
 
 //* server setup
-const port = process.env.PORT || 3000;
-const server = http.createServer(app); 
-const io = socketIo(server); 
-initConnection(io); 
+const server = http.createServer(app);
+const io = init(server); // Initialize Socket.IO
 
-server.listen(+port, () => {
+initSockets(); // Load all socket handlers
+
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 

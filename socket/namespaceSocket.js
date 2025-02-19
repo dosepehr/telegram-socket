@@ -1,10 +1,13 @@
-const Namespace = require('../modules/Namespaces/namespaceModel');
+const Namespace = require("../modules/Namespaces/namespaceModel");
 
+exports.initNamespaces = async (io) => {
+    const namespaces = await Namespace.find({}).lean();
 
-exports.initConnection = (io) => {
-  io.on("connection", async (socket) => {
-    console.log("Socket ID ->", socket.id);
-    const namespaces = await Namespace.find({}).sort({ _id: -1 });
-    socket.emit("namespaces", namespaces);
-  });
+    namespaces.forEach((namespace) => {
+        const nsp = io.of(namespace.href);
+        nsp.on("connection", (socket) => {
+            console.log(`User connected to namespace: ${namespace.href}`);
+            socket.emit("namespaceRooms", namespace.rooms);
+        });
+    });
 };
