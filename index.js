@@ -25,6 +25,7 @@ const hpp = require('hpp');
 const compression = require('compression');
 const namespaceRouter = require('./modules/Namespaces/namespaceRouter');
 const roomRouter = require('./modules/Rooms/roomRouter');
+const { initConnection, initNamespaces } = require('./socket/namespaceSocket');
 
 const limiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 15 minutes
@@ -41,7 +42,7 @@ require('./utils/funcs/db');
 app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));
 app.use(bodyParser.json());
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use('/api', limiter);
 app.use(helmet());
 app.use(mongoSanitize());
@@ -63,8 +64,8 @@ const corsOptions = {
         }
     },
 };
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.use(cors());
+app.options('*', cors());
 
 // Serving static files
 
@@ -86,18 +87,16 @@ app.all('*', async (req, res, next) => {
 
 //* error handling middleware
 app.use(globalErrorHandler);
-
 //* server setup`
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-io.on("connection", (socket) => {
-    console.log("New client connected:", socket.id);
-
-    socket.on("disconnect", () => {
-        console.log("Client disconnected:", socket.id);
+io.on('connection', (socket) => {
+    console.log('New client connected:', socket.id);
+    socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
     });
 });
 process.on('unhandledRejection', (err) => {
