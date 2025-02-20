@@ -95,6 +95,8 @@ server.listen(port, () => {
 
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
+    initConnection(io);
+    initNamespaces(io);
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
