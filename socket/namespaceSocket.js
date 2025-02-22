@@ -12,16 +12,16 @@ exports.initNamespaces = async (io) => {
     namespaces.forEach((namespace) => {
         const nsp = io.of(namespace.href);
         nsp.on('connection', (socket) => {
-            console.log(`User connected to namespace: ${namespace.href}`);
             socket.emit('namespaceRooms', namespace.rooms);
 
             socket.on('joining', async (newRoom) => {
+                const lastRoom = Array.from(socket.rooms)[1];
+                if (lastRoom) socket.leave(lastRoom);
                 socket.join(newRoom);
 
                 const roomInfo = namespace.rooms.find(
                     (room) => room.title == newRoom
                 );
-                console.log(roomInfo)
             });
         });
     });
