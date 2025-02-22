@@ -14,6 +14,15 @@ exports.initNamespaces = async (io) => {
         nsp.on('connection', (socket) => {
             console.log(`User connected to namespace: ${namespace.href}`);
             socket.emit('namespaceRooms', namespace.rooms);
+
+            socket.on('joining', async (newRoom) => {
+                socket.join(newRoom);
+
+                const roomInfo = namespace.rooms.find(
+                    (room) => room.title == newRoom
+                );
+                console.log(roomInfo)
+            });
         });
     });
 };

@@ -1,6 +1,7 @@
 const expressAsyncHandler = require('express-async-handler');
 
 const Namespace = require('../Namespaces/namespaceModel');
+const { Room } = require('./roomModel');
 
 exports.addRoom = expressAsyncHandler(async (req, res, next) => {
     const { title, namespace } = req.body;
@@ -16,7 +17,7 @@ exports.addRoom = expressAsyncHandler(async (req, res, next) => {
         return res.status(400).json({ message: 'Room already exist !!' });
     }
 
-    const room = { title };
+    const room = await Room.create({ title });
 
     await Namespace.findOneAndUpdate(
         { href: namespace },

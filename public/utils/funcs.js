@@ -89,7 +89,7 @@ export const showNamespaceChats = (rooms) => {
             <a class="sidebar__contact-link" href="#">
               <div class="sidebar__contact-left">
                 <div class="sidebar__contact-left-left">
-                  <img class="sidebar__contact-avatar" src="http://localhost:4000/${room.image}">
+                  <img class="sidebar__contact-avatar" src="http://localhost:4000/public/images/avatar.jpg">
                 </div>
                 <div class="sidebar__contact-left-right">
                   <span class="sidebar__contact-title">${room.title}</span>
