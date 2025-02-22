@@ -22,8 +22,8 @@ window.addEventListener('load', async () => {
             showNamespaces(namespaces, socket);
 
             showActiveNamespace(namespaces);
-            // sendMessageInRoom();
-            // getMsg();
+            sendMessageInRoom();
+            getMsg();
             // detectIsTyping();
             // sendLocation();
             // getLocation();

@@ -201,7 +201,7 @@ export const sendMessageInRoom = () => {
                 namespaceSocket.emit('newMsg', {
                     message,
                     roomName,
-                    sender: user._id,
+                    sender: 'me',
                 });
                 event.target.value = '';
             }
@@ -342,4 +342,3 @@ export const getFile = () => {
         console.log('New Media ->', data);
     });
 };
-
