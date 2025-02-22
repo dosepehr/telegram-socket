@@ -18,15 +18,25 @@ exports.initNamespaces = async (io) => {
 
             socket.on('joining', async (newRoom) => {
                 const lastRoom = Array.from(socket.rooms)[1];
-                if (lastRoom) socket.leave(lastRoom);
+
+                if (lastRoom) {
+                    // leaving
+                    socket.leave(lastRoom);
+                    await getRoomSockets(io, namespace.href, newRoom);
+                }
+                // joining
                 socket.join(newRoom);
                 await getRoomSockets(io, namespace.href, newRoom);
                 const roomInfo = mainSpace.rooms.find(
                     (room) => room.title == newRoom
                 );
                 socket.emit('roomInfo', roomInfo);
+                // disconnecting
+                socket.on('disconnect', async () => {
+                    await getRoomSockets(io, namespace.href, newRoom);
+                });
             });
-        }); 
+        });
     });
 };
 
