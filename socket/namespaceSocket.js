@@ -11,17 +11,21 @@ exports.initNamespaces = async (io) => {
 
     namespaces.forEach((namespace) => {
         const nsp = io.of(namespace.href);
-        nsp.on('connection', (socket) => {
-            socket.emit('namespaceRooms', namespace.rooms);
+
+        nsp.on('connection', async (socket) => {
+            const mainSpace = await Namespace.findOne({ _id: namespace._id });
+            console.log(mainSpace);
+            socket.emit('namespaceRooms', mainSpace.rooms);
 
             socket.on('joining', async (newRoom) => {
                 const lastRoom = Array.from(socket.rooms)[1];
                 if (lastRoom) socket.leave(lastRoom);
                 socket.join(newRoom);
 
-                const roomInfo = namespace.rooms.find(
+                const roomInfo = mainSpace.rooms.find(
                     (room) => room.title == newRoom
                 );
+                socket.emit('roomInfo', roomInfo);
             });
         });
     });
